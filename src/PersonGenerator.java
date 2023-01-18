@@ -1,74 +1,71 @@
-
+import java.io.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.SQLOutput;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileWriter;
+
+
+import static java.nio.file.StandardOpenOption.CREATE;
 
 public class PersonGenerator {
 
     public static void main(String[] args) {
         ArrayList<String> Recs = new ArrayList<>();
+        Scanner in = new Scanner(System.in);
+
+        File workingDirectory = new File(System.getProperty("user.dir"));
+        Path file = Paths.get(workingDirectory.getPath() + "\\src\\personData.txt");
+
+        boolean done = false;
         //ID
+        String personRec = "";
+        String ID = "";
+        String firstName = "";
+        String lastName = "";
+        String title ="";
+        int YOB = 0;
 
 
-
-            Scanner myID = new Scanner(System.in);
-            System.out.println("Enter ID: ");
-
-            String iD = myID.nextLine();
-            //System.out.println("ID is: " + iD);
-            //First Name
-            Scanner myName = new Scanner(System.in);
-            System.out.println("Enter first name: ");
-            String fname = myName.nextLine();
-
-            // Last Name
-
-            Scanner myLastName = new Scanner(System.in);
-            System.out.println("Enter Last name: ");
-            String lName = myLastName.nextLine();
-            //Title
-            Scanner myTitle = new Scanner(System.in);
-            System.out.println("Enter your title: ");
-            String mTitle = myTitle.nextLine();
-            //Year of birth
-            Scanner myBirthYear = new Scanner(System.in);
-            System.out.println("Enter your year of birth: ");
-            int year = myBirthYear.nextInt();
+        do {
 
 
-            System.out.println("Record is: " + iD + ", " + fname + ", " + lName + ", " + mTitle + ", " + year);
-            System.out.println("Do you want to enter another?");
+            ID = SafeInput.getNonZeroLenString(in, "Enter the ID [6 digits] ");
+            firstName = SafeInput.getNonZeroLenString(in, "Enter first name ");
+            lastName = SafeInput.getNonZeroLenString(in, "Enter last name ");
+            title = SafeInput.getNonZeroLenString(in,"Enter title ");
+            YOB = SafeInput.getRangedInt(in, "Enter the year of birth: ", 1000, 9999);
+
+            personRec = ID + "," + firstName + "," + lastName + "," + title + "," + YOB;
+            Recs.add(personRec);
+
+            done = SafeInput.getYNConfirm(in, "Are you done? ");
+
+        } while(!done);
 
 
 
             //Create new file
 
             try {
-                File personTest = new File("PersonTestData.txt");
-                if (personTest.createNewFile()) {
-                    System.out.println("File Created: " + personTest.getName());
-                } else {
-                    System.out.println("File Already exists");
+
+                OutputStream out = new BufferedOutputStream(Files.newOutputStream(file, CREATE));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
+
+                for (String rec : Recs) {
+                    writer.write(rec, 0, rec.length());
+                    writer.newLine();
                 }
-            } catch (IOException e) {
-                System.out.println("An error occured");
-                e.printStackTrace();
+                writer.close();
+                System.out.println("Data file written!");
             }
-
-            //Write to file
-
-            try {
-                FileWriter dataWriter = new FileWriter("PersonTestData.txt");
-                dataWriter.write( fname + ", " + lName + ", " + iD + ", " + mTitle + ", " + year);
-                dataWriter.close();
-                System.out.println("Successfully wrote! ");
-            } catch (IOException e) {
-                System.out.println("Error Occurred");
-                e.printStackTrace();
+            catch (IOException e)
+            {
+            e.printStackTrace();
             }
-
 
 
         }

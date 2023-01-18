@@ -10,7 +10,7 @@ public class PersonReader {
 
         try {
 
-            File personTest = new File("PersonTestData.txt");
+            File personTest = new File("personData.txt");
 
             Scanner myReader = new Scanner(personTest);
 
